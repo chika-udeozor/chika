@@ -1,0 +1,122 @@
+---
+title: "Project 420"
+author: "Chika Udeozor"
+format: html
+editor: visual
+---
+
+Loading Libraries
+
+```{r}
+library(tidyverse)
+library(caret)
+library(class)
+library(ggplot2)
+```
+
+## Loading Data
+
+```{r}
+data <- read.csv("data/Supplement_Weekly_Sales.csv")
+```
+
+## Exploring Data
+
+```{r}
+head(data)
+```
+
+```{r}
+summary(data)
+```
+
+## Cleaning Data
+
+Checking for missing values in each column
+
+```{r}
+colSums(is.na(data))
+```
+
+Removing Duplicates
+
+```{r}
+clean_data <- data %>%
+  distinct()
+```
+
+Converting date format
+
+```{r}
+clean_data$Date <- as.Date(clean_data$Date)
+```
+
+```{r}
+head(clean_data)
+```
+
+## Business Question 1
+
+Given Units sold and Discount for each product, can we predict weekly revenue to be generated?
+
+Linera model tool was used in predicting generated revenue
+
+```{r}
+linear_model <- lm(Revenue ~ Units.Sold + Discount, data = clean_data)
+
+summary(linear_model)
+```
+
+## Visualization of Units Sold, Revenue and Discount
+
+```{r}
+library(ggplot2)
+```
+
+```{r}
+ggplot(clean_data, aes(x = Units.Sold, y = Revenue, color = Discount)) +
+  geom_point(alpha = 0.4) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "Relationship between Units Sold and Revenue",
+    x = "Units Sold (per week)",
+    y = "Revenue (per week)",
+    color = "Discount"
+  )
+```
+
+## Business Question 2
+
+Can weekly revenue be predicted from platform and location(while taking into consideration Units Sold)
+
+```{r}
+linear_model1 <- lm(Revenue ~ Platform + Location + Units.Sold, data = clean_data)
+
+summary(linear_model1)
+```
+
+## Visualization of Units Sold, Platform and Location
+
+Weekly Revenue By Platform
+
+```{r}
+ggplot(clean_data, aes(x = Platform, y = Revenue, fill = Platform)) +
+  geom_boxplot(alpha = 0.6, color = "orange") +
+  labs(
+    title = "Weekly Revenue By Platform",
+    xlab = "Platform",
+    ylab = "Revenue (per week)",
+  )
+```
+
+Weekly Revenue By Location
+
+```{r}
+ggplot(clean_data, aes(x = Location, y = Revenue, fill = Location)) +
+  geom_boxplot(alpha = 0.6, color = "purple") +
+  labs(
+    title = "Weekly Revenue By Location",
+    xlab = "Location",
+    ylab = "Revenue (per week)",
+  )
+```
